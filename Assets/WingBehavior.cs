@@ -13,7 +13,8 @@ public class WingBehavior : MonoBehaviour {
 	Rigidbody rb;
 	GameObject camera;
 	GameObject cloudSpawn;
-	public int health;
+	Transform tranny;
+	public int health = 50;
 	bool flightConfig = false;
 	// Use this for initialization
 /*	void Awake () {
@@ -32,6 +33,7 @@ public class WingBehavior : MonoBehaviour {
 		//cloudText = (Text) GameObject..FindObjectsOfTag();
 		//for(int 
 		cloudSpawn = Resources.Load ("Cloud", typeof(GameObject)) as GameObject;
+		tranny = gameObject.transform;
 	}
 	
 	// Update is called once per frame
@@ -54,7 +56,16 @@ public class WingBehavior : MonoBehaviour {
 			Thrust ();
 		} else {
 			rb.drag = .5f;
+			//Invoke ("Gravity", .5f);
 		}
+		if (DeathCheck ()) {
+			Invoke ("Death", 5f);
+		}
+	}
+
+	void Gravity () {
+		//rb.drag = 0;
+		//rb.velocity.y -= camera.transform.up.y;
 	}
 
 	void Thrust () {
@@ -89,13 +100,17 @@ public class WingBehavior : MonoBehaviour {
 				gameObject.transform.localScale.z / 1.2f);*/
 			Debug.Log ("complete");
 		} else {
-			DeathCheck ();
+			
 		}
 
 	}
 
+	void Death() {
+		Application.LoadLevel (Application.loadedLevel);
+	}
+
 	bool DeathCheck() {
-		if (this.health < 0 || gameObject.transform.position.y <= -10) {
+		if (this.health < 0 || tranny.position.y <= -10) {
 			return true;
 		}
 		return false;
