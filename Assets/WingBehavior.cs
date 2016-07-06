@@ -9,10 +9,11 @@ public class WingBehavior : MonoBehaviour {
 	public float maxThrust = 50f;
 	SteamVR_Controller.Device leftDevice, rightDevice;
 	int cloudLevel = 0;
-	public Text cloudText;
+	public Text cloudText, fuelText, healthText;
 	Rigidbody rb;
 	GameObject camera;
 	GameObject cloudSpawn;
+	public int health;
 	bool flightConfig = false;
 	// Use this for initialization
 /*	void Awake () {
@@ -27,7 +28,9 @@ public class WingBehavior : MonoBehaviour {
 		controllers = gameObject.GetComponentInParent<SteamVR_ControllerManager> ();
 		rb = gameObject.GetComponent<Rigidbody> ();
 		camera = GameObject.FindGameObjectWithTag ("MainCamera");
-		cloudText = (Text) FindObjectOfType(typeof(Text));
+		//future bewarned when tags became variables for MINE CONVENIENCE!
+		//cloudText = (Text) GameObject..FindObjectsOfTag();
+		//for(int 
 		cloudSpawn = Resources.Load ("Cloud", typeof(GameObject)) as GameObject;
 	}
 	
@@ -86,8 +89,16 @@ public class WingBehavior : MonoBehaviour {
 				gameObject.transform.localScale.z / 1.2f);*/
 			Debug.Log ("complete");
 		} else {
+			DeathCheck ();
 		}
 
+	}
+
+	bool DeathCheck() {
+		if (this.health < 0 || gameObject.transform.position.y <= -10) {
+			return true;
+		}
+		return false;
 	}
 
 	Vector3 spawnHigher(Vector3 pos) {
