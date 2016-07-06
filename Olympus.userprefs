@@ -1,0 +1,16 @@
+﻿<Properties StartupItem="Assembly-CSharp.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\WingBehavior.cs">
+    <Files>
+      <File FileName="Assets\WingBehavior.cs" Line="44" Column="65" />
+      <File FileName="Assets\SteamVR\Scripts\SteamVR_ControllerManager.cs" Line="18" Column="2" />
+      <File FileName="Assets\PlayerController.cs" Line="20" Column="1" />
+      <File FileName="Assets\SteamVR\Scripts\SteamVR_Render.cs" Line="142" Column="6" />
+      <File FileName="Assets\DetermineHeadset.cs" Line="9" Column="27" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
