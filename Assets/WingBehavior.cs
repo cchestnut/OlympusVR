@@ -14,7 +14,8 @@ public class WingBehavior : MonoBehaviour {
 	GameObject camera;
 	GameObject cloudSpawn;
 	Transform tranny;
-	public int health = 50;
+	public double health = 500;
+	public int fuel = 1000;
 	bool flightConfig = false;
 	// Use this for initialization
 /*	void Awake () {
@@ -37,7 +38,7 @@ public class WingBehavior : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void FixedUpdate () {
+	void Update () {
 		if (leftDevice == null || rightDevice == null) {
 			leftIndex = (int) controllers.left.gameObject.GetComponent<SteamVR_TrackedObject> ().index;
 			rightIndex = (int) controllers.right.gameObject.GetComponent<SteamVR_TrackedObject> ().index;
@@ -51,7 +52,7 @@ public class WingBehavior : MonoBehaviour {
 		}
 		flightConfig = leftDevice.GetPress (SteamVR_Controller.ButtonMask.Trigger) &&
 			rightDevice.GetPress (SteamVR_Controller.ButtonMask.Trigger);
-		if (flightConfig ) {
+		if (flightConfig && fuel > 0) {
 			rb.drag = 0;
 			Thrust ();
 		} else {
@@ -76,6 +77,8 @@ public class WingBehavior : MonoBehaviour {
 		//transform.position += camera.transform.forward * thrust;
 		//if(rb.velocity.magnitude <= maxThrust)
 			rb.velocity += camera.transform.forward * thrust;
+		fuel--;
+		fuelText.text = "Fuel: " + fuel;
 	}
 
 	void OnCollisionEnter (Collision col) {
@@ -89,7 +92,7 @@ public class WingBehavior : MonoBehaviour {
 			}
 			cloudLevel++;
 			Debug.Log (cloudLevel);
-			share.taint ();
+			share.taint (); 
 			if (cloudText != null)
 				cloudText.text = "Cloud: " + cloudLevel;
 			GameObject obj = Instantiate (cloudSpawn,
@@ -105,12 +108,23 @@ public class WingBehavior : MonoBehaviour {
 
 	}
 
+	void OnCollisionStay (Collision col) {
+		GameObject gobj = col.gameObject;
+		if (gobj.name.Contains ("Cloud")) {
+			fuel++;
+			fuelText.text = "Fuel: " + fuel;
+		} else if (gobj.name.Contains ("Terrain")) {
+			health -= 1;
+			healthText.text = "Health: " + health;
+		}
+	}
+
 	void Death() {
 		Application.LoadLevel (Application.loadedLevel);
 	}
 
 	bool DeathCheck() {
-		if (this.health < 0 || tranny.position.y <= -10) {
+		if (this.health <= 0 || tranny.position.y <= -10) {
 			return true;
 		}
 		return false;
