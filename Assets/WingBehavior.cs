@@ -55,12 +55,18 @@ public class WingBehavior : MonoBehaviour {
 		if (flightConfig && fuel > 0) {
 			rb.drag = 0;
 			Thrust ();
+		} else if (fuel <= 0) {
+			rb.velocity = new Vector3 (
+				rb.velocity.x,
+				rb.velocity.y - 1,
+				rb.velocity.z
+			);
 		} else {
 			rb.drag = .5f;
 			//Invoke ("Gravity", .5f);
 		}
 		if (DeathCheck ()) {
-			Invoke ("Death", 5f);
+			Invoke ("Death", 3f);
 		}
 	}
 
@@ -97,16 +103,22 @@ public class WingBehavior : MonoBehaviour {
 				cloudText.text = "Cloud: " + cloudLevel;
 			GameObject obj = Instantiate (cloudSpawn,
 				spawnHigher(transform.position), transform.rotation) as GameObject;
-			/*obj.transform.localScale = new Vector3 (
-				gameObject.transform.localScale.x / 1.2f,
-				gameObject.transform.localScale.y,
-				gameObject.transform.localScale.z / 1.2f);*/
-			Debug.Log ("complete");
-		} else {
-			
+			obj.transform.localScale = shrink (obj.transform.localScale);
+		} else if (gobj.name.Contains ("Terrain")) {
+			Debug.Log (col.relativeVelocity.y);
+			ReduceHealth (Mathf.Abs (col.relativeVelocity.y));
 		}
 
 	}
+
+	Vector3 shrink (Vector3 oldPos) {
+		return new Vector3 (
+			oldPos.x / (cloudLevel+1),
+			oldPos.y,
+			oldPos.z / (cloudLevel+1)
+		);
+	}
+
 
 	void OnCollisionStay (Collision col) {
 		GameObject gobj = col.gameObject;
@@ -114,13 +126,27 @@ public class WingBehavior : MonoBehaviour {
 			fuel++;
 			fuelText.text = "Fuel: " + fuel;
 		} else if (gobj.name.Contains ("Terrain")) {
-			health -= 1;
-			healthText.text = "Health: " + health;
+			StartCoroutine (ReduceHealth(1));
+			Debug.Log("fruit loops");
 		}
 	}
 
+	IEnumerator ReduceHealth(double damage) {
+		health -= damage;
+		healthText.text = "Health: " + health;
+		yield return new WaitForSeconds(3f);
+	}
+
 	void Death() {
+		CheckHighScores ();
+		DisplayHighScores ();
 		Application.LoadLevel (Application.loadedLevel);
+	}
+
+	void CheckHighScores () {
+	}
+
+	void DisplayHighScores(){
 	}
 
 	bool DeathCheck() {
