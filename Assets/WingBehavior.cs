@@ -27,6 +27,7 @@ public class WingBehavior : MonoBehaviour {
 		}
 	}*/
 	void Start () {
+		Debug.Log (Application.platform);
 		controllers = gameObject.GetComponentInParent<SteamVR_ControllerManager> ();
 		rb = gameObject.GetComponent<Rigidbody> ();
 		camera = GameObject.FindGameObjectWithTag ("MainCamera");
@@ -92,10 +93,13 @@ public class WingBehavior : MonoBehaviour {
 		GameObject gobj = col.gameObject;
 
 		if (gobj.name.Contains("Cloud")) {
+			GetComponent<AudioSource> ().Play ();
 			CloudManager share = gobj.GetComponent<CloudManager>() as CloudManager;
 			if (share == null || !share.getClean ()) {
 				return;
 			}
+			AudioSource muteButton = gobj.GetComponent<AudioSource> () as AudioSource;
+			muteButton.mute = true;
 			cloudLevel++;
 			Debug.Log (cloudLevel);
 			share.taint (); 
