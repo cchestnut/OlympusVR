@@ -13,6 +13,7 @@ public class WingBehavior : MonoBehaviour {
 	Rigidbody rb;
 	GameObject camera;
 	GameObject cloudSpawn;
+    GameObject bludgerSpawn;
 	Transform tranny;
 	public double health = 500;
 	public int fuel = 1000;
@@ -35,7 +36,8 @@ public class WingBehavior : MonoBehaviour {
 		//cloudText = (Text) GameObject..FindObjectsOfTag();
 		//for(int 
 		cloudSpawn = Resources.Load ("Cloud", typeof(GameObject)) as GameObject;
-		tranny = gameObject.transform;
+        bludgerSpawn = Resources.Load("Bludger", typeof(GameObject)) as GameObject;
+ 		tranny = gameObject.transform;
 	}
 	
 	// Update is called once per frame
@@ -105,10 +107,21 @@ public class WingBehavior : MonoBehaviour {
 			share.taint (); 
 			if (cloudText != null)
 				cloudText.text = "Cloud: " + cloudLevel;
+
+            
 			GameObject obj = Instantiate (cloudSpawn,
 				spawnHigher(transform.position), transform.rotation) as GameObject;
 			obj.transform.localScale = shrink (obj.transform.localScale);
-		} else if (gobj.name.Contains ("Terrain")) {
+            if (cloudLevel >= 1)
+            {
+                (Instantiate(bludgerSpawn,
+                    new Vector3(camera.transform.position.x, camera.transform.position.y,
+                    camera.transform.position.z + 3), 
+                    camera.transform.rotation) 
+                    as GameObject).GetComponent<BludgerScript>()
+                    .setHomeCloud(gobj);
+            }
+        } else if (gobj.name.Contains ("Terrain")) {
 			Debug.Log (col.relativeVelocity.y);
 			ReduceHealth (Mathf.Abs (col.relativeVelocity.y));
 		}
@@ -131,8 +144,10 @@ public class WingBehavior : MonoBehaviour {
 			fuelText.text = "Fuel: " + fuel;
 		} else if (gobj.name.Contains ("Terrain")) {
 			StartCoroutine (ReduceHealth(1));
-			Debug.Log("fruit loops");
-		}
+		} else if (gobj.name.Contains("Bludger"))
+        {
+            StartCoroutine(ReduceHealth(5));
+        }
 	}
 
 	IEnumerator ReduceHealth(double damage) {
