@@ -18,6 +18,8 @@ public class WingBehavior : MonoBehaviour {
 	public double health = 500;
 	public int fuel = 1000;
 	bool flightConfig = false;
+    string[] highScoreNames = new string[10];
+    int[] highScoreVals = new int[10];
 	// Use this for initialization
 /*	void Awake () {
 		Debug.Log ("Made it!");
@@ -38,7 +40,21 @@ public class WingBehavior : MonoBehaviour {
 		cloudSpawn = Resources.Load ("Cloud", typeof(GameObject)) as GameObject;
         bludgerSpawn = Resources.Load("Bludger", typeof(GameObject)) as GameObject;
  		tranny = gameObject.transform;
+        LoadHighScores();
+
 	}
+
+    void LoadHighScores()
+    {
+        for(int i =0; i < 10; i++)
+        {
+            if (PlayerPrefs.HasKey(i + "HScore") && PlayerPrefs.HasKey(i + "HScoreName"))
+            {
+                highScoreNames[i] = PlayerPrefs.GetString(i + "HScoreName");
+                highScoreVals[i] = PlayerPrefs.GetInt(i + "HScore");
+            }
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -112,11 +128,11 @@ public class WingBehavior : MonoBehaviour {
 			GameObject obj = Instantiate (cloudSpawn,
 				spawnHigher(transform.position), transform.rotation) as GameObject;
 			obj.transform.localScale = shrink (obj.transform.localScale);
-            if (cloudLevel >= 1)
+            if (cloudLevel >= 3)
             {
                 (Instantiate(bludgerSpawn,
                     new Vector3(camera.transform.position.x, camera.transform.position.y,
-                    camera.transform.position.z + 3), 
+                    camera.transform.position.z + 10), 
                     camera.transform.rotation) 
                     as GameObject).GetComponent<BludgerScript>()
                     .setHomeCloud(gobj);
@@ -163,7 +179,47 @@ public class WingBehavior : MonoBehaviour {
 	}
 
 	void CheckHighScores () {
+        //do check
+        if (isNewHighScore(cloudLevel))
+        {
+           // Application.LoadLevel(Application.)
+           //load high score level
+        }
 	}
+
+    bool isNewHighScore(int cloudLevel)
+    {
+        int newScore, oldScore;
+        string newName, oldName;
+        bool result = false;
+        newScore = cloudLevel;
+        newName = "BOB";
+        for (int i = 0; i < 10; i++)
+        {
+            if (PlayerPrefs.HasKey(i + "HScore"))
+            {
+                if (PlayerPrefs.GetInt(i + "HScore") < newScore)
+                {
+                    // new score is higher than the stored score
+                    oldScore = PlayerPrefs.GetInt(i + "HScore");
+                    oldName = PlayerPrefs.GetString(i + "HScoreName");
+                    PlayerPrefs.SetInt(i + "HScore", newScore);
+                    PlayerPrefs.SetString(i + "HScoreName", newName);
+                    newScore = oldScore;
+                    newName = oldName;
+                    result = true;
+                }
+            }
+            else
+            {
+                PlayerPrefs.SetInt(i + "HScore", newScore);
+                PlayerPrefs.SetString(i + "HScoreName", newName);
+                newScore = 0;
+                newName = "";
+            }
+        }
+        return result;
+    }
 
 	void DisplayHighScores(){
 	}
