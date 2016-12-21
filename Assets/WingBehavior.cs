@@ -131,7 +131,7 @@ public class WingBehavior : MonoBehaviour {
             if (cloudLevel >= 3)
             {
                 (Instantiate(bludgerSpawn,
-                    new Vector3(camera.transform.position.x, camera.transform.position.y,
+                    new Vector3(camera.transform.position.x, camera.transform.position.y + 10,
                     camera.transform.position.z + 10), 
                     camera.transform.rotation) 
                     as GameObject).GetComponent<BludgerScript>()
