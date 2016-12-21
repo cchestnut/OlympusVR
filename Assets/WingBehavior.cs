@@ -18,8 +18,8 @@ public class WingBehavior : MonoBehaviour {
 	public double health = 500;
 	public int fuel = 1000;
 	bool flightConfig = false;
-    string[] highScoreNames = new string[10];
-    int[] highScoreVals = new int[10];
+    //string[] highScoreNames = new string[10];
+    //int[] highScoreVals = new int[10];
 	// Use this for initialization
 /*	void Awake () {
 		Debug.Log ("Made it!");
@@ -40,11 +40,11 @@ public class WingBehavior : MonoBehaviour {
 		cloudSpawn = Resources.Load ("Cloud", typeof(GameObject)) as GameObject;
         bludgerSpawn = Resources.Load("Bludger", typeof(GameObject)) as GameObject;
  		tranny = gameObject.transform;
-        LoadHighScores();
+        //LoadHighScores();
 
 	}
 
-    void LoadHighScores()
+   /* void LoadHighScores()
     {
         for(int i =0; i < 10; i++)
         {
@@ -54,7 +54,7 @@ public class WingBehavior : MonoBehaviour {
                 highScoreVals[i] = PlayerPrefs.GetInt(i + "HScore");
             }
         }
-    }
+    }*/
 	
 	// Update is called once per frame
 	void Update () {
@@ -173,12 +173,13 @@ public class WingBehavior : MonoBehaviour {
 	}
 
 	void Death() {
-		CheckHighScores ();
-		DisplayHighScores ();
-		Application.LoadLevel (Application.loadedLevel);
+        //CheckHighScores ();
+        //DisplayHighScores ();
+        PlayerPrefs.SetInt("playerScore", cloudLevel);
+		Application.LoadLevel ("HighScore");
 	}
 
-	void CheckHighScores () {
+	/*void CheckHighScores () {
         //do check
         if (isNewHighScore(cloudLevel))
         {
@@ -222,7 +223,7 @@ public class WingBehavior : MonoBehaviour {
     }
 
 	void DisplayHighScores(){
-	}
+	}*/
 
 	bool DeathCheck() {
 		if (this.health <= 0 || tranny.position.y <= -10) {
