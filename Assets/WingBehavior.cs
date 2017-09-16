@@ -10,6 +10,7 @@ public class WingBehavior : MonoBehaviour {
 	SteamVR_Controller.Device leftDevice, rightDevice;
 	int cloudLevel = 0;
 	public Text cloudText, fuelText, healthText;
+    public bool PC_CONTROL_OPTION_FLAG = true; //need to look for project wide property
 	Rigidbody rb;
 	GameObject camera;
 	GameObject cloudSpawn;
@@ -57,8 +58,15 @@ public class WingBehavior : MonoBehaviour {
     }*/
 	
 	// Update is called once per frame
-	void Update () {
-		if (leftDevice == null || rightDevice == null) {
+	void FrameUpdate () {
+        //this check runs every update; refactor needed
+        //originally created to ensure devices available; weird having it here in another way
+        //whatever module detects platform needs to export their method of controling input
+        //  explore other developing cross platform practices for Unity and VR in general
+        //  explore usefulness of CrossPlatform determining module enabling behavior setting via public variables
+
+        Debug.Log(Input.GetKeyDown(KeyCode.Space));
+        if (!PC_CONTROL_OPTION_FLAG && (leftDevice == null || rightDevice == null)) {
 			leftIndex = (int) controllers.left.gameObject.GetComponent<SteamVR_TrackedObject> ().index;
 			rightIndex = (int) controllers.right.gameObject.GetComponent<SteamVR_TrackedObject> ().index;
 			if (leftIndex < 0 || rightIndex < 0)
@@ -69,22 +77,31 @@ public class WingBehavior : MonoBehaviour {
 			rightDevice.GetPress (SteamVR_Controller.ButtonMask.Trigger);
 			return;
 		}
-		flightConfig = leftDevice.GetPress (SteamVR_Controller.ButtonMask.Trigger) &&
-			rightDevice.GetPress (SteamVR_Controller.ButtonMask.Trigger);
+        if (leftDevice != null && rightDevice != null)
+        {
+            flightConfig = leftDevice.GetPress(SteamVR_Controller.ButtonMask.Trigger) &&
+                rightDevice.GetPress(SteamVR_Controller.ButtonMask.Trigger);
+        }
+        if (PC_CONTROL_OPTION_FLAG) flightConfig = flightConfig || Input.GetKeyDown(KeyCode.Space);
+        if (Event.current != null)
+            Debug.Log(Event.current.ToString());
 		if (flightConfig && fuel > 0) {
 			rb.drag = 0;
 			Thrust ();
-		} else if (fuel <= 0) {
+		}
+        if (fuel <= 0) {
 			rb.velocity = new Vector3 (
 				rb.velocity.x,
 				rb.velocity.y - 1,
 				rb.velocity.z
 			);
-		} else {
+		}
+        if (!flightConfig){
 			rb.drag = .5f;
 			//Invoke ("Gravity", .5f);
 		}
-		if (DeathCheck ()) {
+
+        if (DeathCheck ()) {
 			Invoke ("Death", 3f);
 		}
 	}
@@ -128,7 +145,7 @@ public class WingBehavior : MonoBehaviour {
 			GameObject obj = Instantiate (cloudSpawn,
 				spawnHigher(transform.position), transform.rotation) as GameObject;
 			obj.transform.localScale = shrink (obj.transform.localScale);
-            if (cloudLevel >= 3)
+            if (cloudLevel >= 1)
             {
                 (Instantiate(bludgerSpawn,
                     new Vector3(camera.transform.position.x, camera.transform.position.y + 10,
@@ -136,6 +153,7 @@ public class WingBehavior : MonoBehaviour {
                     camera.transform.rotation) 
                     as GameObject).GetComponent<BludgerScript>()
                     .setHomeCloud(gobj);
+                Debug.Log("Home CLoud: " + gobj.transform.position.ToString());
             }
         } else if (gobj.name.Contains ("Terrain")) {
 			Debug.Log (col.relativeVelocity.y);
